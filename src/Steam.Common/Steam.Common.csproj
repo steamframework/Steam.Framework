@@ -2,6 +2,8 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard1.0</TargetFramework>
+    <RootNamespace>Steam</RootNamespace>
+    <LangVersion>7.3</LangVersion>
   </PropertyGroup>
 
 </Project>
