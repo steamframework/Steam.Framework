@@ -1,15 +1,19 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 15
-VisualStudioVersion = 15.0.26124.0
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.28803.352
 MinimumVisualStudioVersion = 15.0.26124.0
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{9ABA01C7-87F3-4634-AE0F-85BF5973CA5D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Steam.Common", "src\Steam.Common\Steam.Common.csproj", "{FEDB7456-FEA1-4542-8C0D-2483E5A59A1D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steam.Common", "src\Steam.Common\Steam.Common.csproj", "{FEDB7456-FEA1-4542-8C0D-2483E5A59A1D}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{450AC777-C9C0-44D2-94F0-CD179932F22D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Steam.Common.Tests", "tests\Steam.Common.Tests\Steam.Common.Tests.csproj", "{B66A7384-AFCC-4B3E-B0A4-FC86B6CE3494}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steam.Common.Tests", "tests\Steam.Common.Tests\Steam.Common.Tests.csproj", "{B66A7384-AFCC-4B3E-B0A4-FC86B6CE3494}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Steam.KeyValues", "src\Steam.KeyValues\Steam.KeyValues.csproj", "{836655DA-EC34-42C1-82C4-E2699028D836}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Steam.KeyValues.Tests", "tests\Steam.KeyValues.Tests\Steam.KeyValues.Tests.csproj", "{B848B077-7835-4B67-8084-598EC599197F}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -19,9 +23,6 @@ Global
 		Release|Any CPU = Release|Any CPU
 		Release|x64 = Release|x64
 		Release|x86 = Release|x86
-	EndGlobalSection
-	GlobalSection(SolutionProperties) = preSolution
-		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{FEDB7456-FEA1-4542-8C0D-2483E5A59A1D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
@@ -48,9 +49,41 @@ Global
 		{B66A7384-AFCC-4B3E-B0A4-FC86B6CE3494}.Release|x64.Build.0 = Release|Any CPU
 		{B66A7384-AFCC-4B3E-B0A4-FC86B6CE3494}.Release|x86.ActiveCfg = Release|Any CPU
 		{B66A7384-AFCC-4B3E-B0A4-FC86B6CE3494}.Release|x86.Build.0 = Release|Any CPU
+		{836655DA-EC34-42C1-82C4-E2699028D836}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{836655DA-EC34-42C1-82C4-E2699028D836}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{836655DA-EC34-42C1-82C4-E2699028D836}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{836655DA-EC34-42C1-82C4-E2699028D836}.Debug|x64.Build.0 = Debug|Any CPU
+		{836655DA-EC34-42C1-82C4-E2699028D836}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{836655DA-EC34-42C1-82C4-E2699028D836}.Debug|x86.Build.0 = Debug|Any CPU
+		{836655DA-EC34-42C1-82C4-E2699028D836}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{836655DA-EC34-42C1-82C4-E2699028D836}.Release|Any CPU.Build.0 = Release|Any CPU
+		{836655DA-EC34-42C1-82C4-E2699028D836}.Release|x64.ActiveCfg = Release|Any CPU
+		{836655DA-EC34-42C1-82C4-E2699028D836}.Release|x64.Build.0 = Release|Any CPU
+		{836655DA-EC34-42C1-82C4-E2699028D836}.Release|x86.ActiveCfg = Release|Any CPU
+		{836655DA-EC34-42C1-82C4-E2699028D836}.Release|x86.Build.0 = Release|Any CPU
+		{B848B077-7835-4B67-8084-598EC599197F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B848B077-7835-4B67-8084-598EC599197F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B848B077-7835-4B67-8084-598EC599197F}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{B848B077-7835-4B67-8084-598EC599197F}.Debug|x64.Build.0 = Debug|Any CPU
+		{B848B077-7835-4B67-8084-598EC599197F}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{B848B077-7835-4B67-8084-598EC599197F}.Debug|x86.Build.0 = Debug|Any CPU
+		{B848B077-7835-4B67-8084-598EC599197F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B848B077-7835-4B67-8084-598EC599197F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B848B077-7835-4B67-8084-598EC599197F}.Release|x64.ActiveCfg = Release|Any CPU
+		{B848B077-7835-4B67-8084-598EC599197F}.Release|x64.Build.0 = Release|Any CPU
+		{B848B077-7835-4B67-8084-598EC599197F}.Release|x86.ActiveCfg = Release|Any CPU
+		{B848B077-7835-4B67-8084-598EC599197F}.Release|x86.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{FEDB7456-FEA1-4542-8C0D-2483E5A59A1D} = {9ABA01C7-87F3-4634-AE0F-85BF5973CA5D}
 		{B66A7384-AFCC-4B3E-B0A4-FC86B6CE3494} = {450AC777-C9C0-44D2-94F0-CD179932F22D}
+		{836655DA-EC34-42C1-82C4-E2699028D836} = {9ABA01C7-87F3-4634-AE0F-85BF5973CA5D}
+		{B848B077-7835-4B67-8084-598EC599197F} = {450AC777-C9C0-44D2-94F0-CD179932F22D}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {462B494A-4689-4C4E-A455-3C93CB0FF8A0}
 	EndGlobalSection
 EndGlobal
