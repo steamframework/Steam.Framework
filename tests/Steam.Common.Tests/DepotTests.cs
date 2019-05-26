@@ -9,7 +9,7 @@ namespace Steam.Tests
         public void ConstructorSetsId(uint id)
         {
             Depot depot = new Depot(id);
-            Assert.Equal(id, depot.Id);
+            Assert.Equal(id, depot.Value);
         }
 
         [Theory]
@@ -33,7 +33,7 @@ namespace Steam.Tests
         public void ImplicitConversionFromUint(uint id)
         {
             Depot depot = id;
-            Assert.Equal(id, depot.Id);
+            Assert.Equal(id, depot.Value);
         }
 
         [Theory]
@@ -42,7 +42,7 @@ namespace Steam.Tests
         {
             Depot depot = new Depot(id);
             uint uintDepot = depot;
-            Assert.Equal(depot.Id, uintDepot);
+            Assert.Equal(depot.Value, uintDepot);
         }
 
         [Theory]

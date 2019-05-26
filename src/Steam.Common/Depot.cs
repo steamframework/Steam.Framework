@@ -10,7 +10,7 @@ namespace Steam
         /// <summary>
         /// The Id
         /// </summary>
-        public readonly uint Id;
+        public readonly uint Value;
 
         /// <summary>
         /// Invalid depot value
@@ -20,20 +20,20 @@ namespace Steam
         /// <summary>
         /// Creates a new instance of <see cref="Depot"/>
         /// </summary>
-        /// <param name="id">The id</param>
-        public Depot(uint id)
+        /// <param name="value">The id</param>
+        public Depot(uint value)
         {
-            Id = id;
+            Value = value;
         }
 
         /// <summary>
         /// Implicit <see cref="uint"/> to <see cref="Depot"/> conversion
         /// </summary>
-        /// <param name="id">The depot id to convert</param>
+        /// <param name="value">The depot id to convert</param>
         /// <returns>The new <see cref="Depot"/></returns>
-        public static implicit operator Depot(uint id)
+        public static implicit operator Depot(uint value)
         {
-            return new Depot(id);
+            return new Depot(value);
         }
 
         /// <summary>
@@ -43,7 +43,7 @@ namespace Steam
         /// <returns>The converted depot Id</returns>
         public static implicit operator uint(Depot depot)
         {
-            return depot.Id;
+            return depot.Value;
         }
 
         /// <summary>
@@ -52,7 +52,7 @@ namespace Steam
         /// <returns>The hashcode</returns>
         public override int GetHashCode()
         {
-            return (int) Id;
+            return (int) Value;
         }
 
         /// <summary>
@@ -61,7 +61,7 @@ namespace Steam
         /// <returns>The string</returns>
         public override string ToString()
         {
-            return Id.ToString();
+            return Value.ToString();
         }
 
         /// <summary>
@@ -81,7 +81,7 @@ namespace Steam
         /// <returns>Whether the 2 instances are equal</returns>
         public bool Equals(Depot other)
         {
-            return Id == other.Id;
+            return Value == other.Value;
         }
 
         /// <summary>

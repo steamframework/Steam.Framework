@@ -10,7 +10,7 @@ namespace Steam
         /// <summary>
         /// The Id
         /// </summary>
-        public readonly uint Id;
+        public readonly uint Value;
 
         /// <summary>
         /// Invalid package value
@@ -25,20 +25,20 @@ namespace Steam
         /// <summary>
         /// Creates a new instance of <see cref="Package"/>
         /// </summary>
-        /// <param name="id">The id</param>
-        public Package(uint id)
+        /// <param name="value">The id</param>
+        public Package(uint value)
         {
-            Id = id;
+            Value = value;
         }
 
         /// <summary>
         /// Implicit <see cref="uint"/> to <see cref="Package"/> conversion
         /// </summary>
-        /// <param name="id">The package id to convert</param>
+        /// <param name="value">The package id to convert</param>
         /// <returns>The new <see cref="Package"/></returns>
-        public static implicit operator Package(uint id)
+        public static implicit operator Package(uint value)
         {
-            return new Package(id);
+            return new Package(value);
         }
 
         /// <summary>
@@ -48,7 +48,7 @@ namespace Steam
         /// <returns>The new <see cref="Package"/></returns>
         public static implicit operator uint(Package package)
         {
-            return package.Id;
+            return package.Value;
         }
 
         /// <summary>
@@ -57,7 +57,7 @@ namespace Steam
         /// <returns>The hashcode</returns>
         public override int GetHashCode()
         {
-            return (int) Id;
+            return (int) Value;
         }
 
         /// <summary>
@@ -66,7 +66,7 @@ namespace Steam
         /// <returns>The string</returns>
         public override string ToString()
         {
-            return Id.ToString();
+            return Value.ToString();
         }
 
         /// <summary>
@@ -86,7 +86,7 @@ namespace Steam
         /// <returns>Whether the 2 instances are equal</returns>
         public bool Equals(Package other)
         {
-            return Id == other.Id;
+            return Value == other.Value;
         }
 
         /// <summary>

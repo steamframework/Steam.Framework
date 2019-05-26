@@ -8,42 +8,53 @@ namespace Steam
     public readonly struct App : IEquatable<App>
     {
         /// <summary>
-        /// The Id
+        /// The value of the app id
         /// </summary>
-        public readonly uint Id;
+        public readonly uint Value;
 
         /// <summary>
         /// Invalid app value
         /// </summary>
-        public static readonly App Invalid = 0x0;
+        public static readonly App Invalid = (App)0x0;
+
+        /// <summary>
+        /// The max value of a uint24 data structure
+        /// </summary>
+        public const uint UInt24MaxValue = 16777215;
 
         /// <summary>
         /// Creates a new instance of <see cref="App"/>
         /// </summary>
-        /// <param name="id">The id</param>
-        public App(uint id)
+        /// <param name="value">The id with a max value of <seealso cref="UInt24MaxValue"/>(16777215)</param>
+        public App(uint value)
         {
-            Id = id;
+            if (value > UInt24MaxValue)
+            {
+                throw new ArgumentOutOfRangeException(nameof(value),
+                    $"Apps are represented as a uint24 and therefore has a max value of {UInt24MaxValue}");
+            }
+            
+            Value = value;
         }
 
         /// <summary>
-        /// Implicit <see cref="uint"/> to <see cref="App"/> conversion
+        /// Explicit <see cref="uint"/> to <see cref="App"/> conversion
         /// </summary>
-        /// <param name="appId">The app id to convert</param>
+        /// <param name="value">The app id to convert</param>
         /// <returns>The new <see cref="App"/></returns>
-        public static implicit operator App(uint appId)
+        public static explicit operator App(uint value)
         {
-            return new App(appId);
+            return new App(value);
         }
 
         /// <summary>
-        /// Implicit <see cref="App"/> to <see cref="uint"/> conversion
+        /// Explicit <see cref="App"/> to <see cref="uint"/> conversion
         /// </summary>
         /// <param name="app">The app to convert</param>
         /// <returns>The converted app Id</returns>
-        public static implicit operator uint(App app)
+        public static explicit operator uint(App app)
         {
-            return app.Id;
+            return app.Value;
         }
 
 
@@ -53,7 +64,7 @@ namespace Steam
         /// <returns>The hashcode</returns>
         public override int GetHashCode()
         {
-            return Id.GetHashCode();
+            return Value.GetHashCode();
         }
 
         /// <summary>
@@ -62,7 +73,7 @@ namespace Steam
         /// <returns>The string</returns>
         public override string ToString()
         {
-            return Id.ToString();
+            return Value.ToString();
         }
 
         /// <summary>
@@ -82,7 +93,7 @@ namespace Steam
         /// <returns>Whether the 2 instances are equal</returns>
         public bool Equals(App other)
         {
-            return Id == other.Id;
+            return Value == other.Value;
         }
 
         /// <summary>

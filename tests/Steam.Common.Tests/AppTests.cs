@@ -1,3 +1,4 @@
+using System;
 using Xunit;
 
 namespace Steam.Tests
@@ -9,7 +10,15 @@ namespace Steam.Tests
         public void ConstructorSetsId(uint id)
         {
             App app = new App(id);
-            Assert.Equal(id, app.Id);
+            Assert.Equal(id, app.Value);
+        }
+
+        [Theory]
+        [InlineData(16777216)]
+        [InlineData(int.MaxValue)]
+        public void ConstructorOutOfRangeException(uint id)
+        {
+            Assert.Throws<ArgumentOutOfRangeException>(() => { new App(id); });
         }
 
         [Theory]
@@ -30,19 +39,19 @@ namespace Steam.Tests
 
         [Theory]
         [InlineData(1)]
-        public void ImplicitConversionFromUint(uint id)
+        public void ExplicitConversionFromUint(uint id)
         {
-            App app = id;
-            Assert.Equal(id, app.Id);
+            App app = (App)id;
+            Assert.Equal(id, app.Value);
         }
 
         [Theory]
         [InlineData(1)]
-        public void ImplicitConversionFromApp(uint id)
+        public void ExplicitConversionFromApp(uint id)
         {
             App app = new App(id);
-            uint uintApp = app;
-            Assert.Equal(app.Id, uintApp);
+            uint uintApp = (uint)app;
+            Assert.Equal(app.Value, uintApp);
         }
 
         [Theory]
