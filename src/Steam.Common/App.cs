@@ -20,18 +20,18 @@ namespace Steam
         /// <summary>
         /// The max value of a uint24 data structure
         /// </summary>
-        public const uint UInt24MaxValue = 16777215;
+        public const uint MaxValue = 16777215;
 
         /// <summary>
         /// Creates a new instance of <see cref="App"/>
         /// </summary>
-        /// <param name="value">The id with a max value of <seealso cref="UInt24MaxValue"/>(16777215)</param>
+        /// <param name="value">The id with a max value of <seealso cref="MaxValue"/>(16777215)</param>
         public App(uint value)
         {
-            if (value > UInt24MaxValue)
+            if (value > MaxValue)
             {
                 throw new ArgumentOutOfRangeException(nameof(value),
-                    $"Apps are represented as a uint24 and therefore has a max value of {UInt24MaxValue}");
+                    $"Apps are currently represented as a uint24 and therefore have a max value of {MaxValue}");
             }
             
             Value = value;
