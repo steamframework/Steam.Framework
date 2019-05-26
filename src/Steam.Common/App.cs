@@ -18,7 +18,7 @@ namespace Steam
         public static readonly App Invalid = (App)0x0;
 
         /// <summary>
-        /// The max value of a uint24 data structure
+        /// The max value of an app id
         /// </summary>
         public const uint MaxValue = 16777215;
 
@@ -31,7 +31,7 @@ namespace Steam
             if (value > MaxValue)
             {
                 throw new ArgumentOutOfRangeException(nameof(value),
-                    $"Apps are currently represented as a uint24 and therefore have a max value of {MaxValue}");
+                    $"App ids have a max value of {MaxValue}");
             }
             
             Value = value;
