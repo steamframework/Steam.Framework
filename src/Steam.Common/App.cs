@@ -8,7 +8,7 @@ namespace Steam
     public readonly struct App : IEquatable<App>
     {
         /// <summary>
-        /// The value of the app id
+        /// The value of the app ID
         /// </summary>
         public readonly uint Value;
 
@@ -18,14 +18,14 @@ namespace Steam
         public static readonly App Invalid = (App)0x0;
 
         /// <summary>
-        /// The max value of an app id
+        /// The max value of an app ID
         /// </summary>
         public const uint MaxValue = 16777215;
 
         /// <summary>
         /// Creates a new instance of <see cref="App"/>
         /// </summary>
-        /// <param name="value">The id with a max value of <seealso cref="MaxValue"/>(16777215)</param>
+        /// <param name="value">The ID with a max value of <seealso cref="MaxValue"/>(16777215)</param>
         public App(uint value)
         {
             if (value > MaxValue)
@@ -40,7 +40,7 @@ namespace Steam
         /// <summary>
         /// Explicit <see cref="uint"/> to <see cref="App"/> conversion
         /// </summary>
-        /// <param name="value">The app id to convert</param>
+        /// <param name="value">The app ID to convert</param>
         /// <returns>The new <see cref="App"/></returns>
         public static explicit operator App(uint value)
         {

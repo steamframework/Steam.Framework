@@ -25,7 +25,7 @@ namespace Steam
         /// <summary>
         /// Creates a new instance of <see cref="Package"/>
         /// </summary>
-        /// <param name="value">The id</param>
+        /// <param name="value">The ID</param>
         public Package(uint value)
         {
             Value = value;
@@ -34,7 +34,7 @@ namespace Steam
         /// <summary>
         /// Implicit <see cref="uint"/> to <see cref="Package"/> conversion
         /// </summary>
-        /// <param name="value">The package id to convert</param>
+        /// <param name="value">The package ID to convert</param>
         /// <returns>The new <see cref="Package"/></returns>
         public static implicit operator Package(uint value)
         {

@@ -20,7 +20,7 @@ namespace Steam
         /// <summary>
         /// Creates a new instance of <see cref="Depot"/>
         /// </summary>
-        /// <param name="value">The id</param>
+        /// <param name="value">The ID</param>
         public Depot(uint value)
         {
             Value = value;
@@ -29,7 +29,7 @@ namespace Steam
         /// <summary>
         /// Implicit <see cref="uint"/> to <see cref="Depot"/> conversion
         /// </summary>
-        /// <param name="value">The depot id to convert</param>
+        /// <param name="value">The depot ID to convert</param>
         /// <returns>The new <see cref="Depot"/></returns>
         public static implicit operator Depot(uint value)
         {
