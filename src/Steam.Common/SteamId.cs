@@ -21,7 +21,7 @@ namespace Steam
         private const int ChatAccountInstanceMask = 0xFFF;
 
         private readonly static Regex Steam2Regex = new Regex(@"STEAM_([0-4]):(0|1):(\d+)");
-        private static readonly Regex Steam3Regex = new Regex(@"^\[([IUMGAPCgTLca]):([0-4]):(\d+)(?::(\d+))?\]");
+        private static readonly Regex Steam3Regex = new Regex(@"^\[([iIUMGAPCgTLca]):([0-4]):(\d+)(?::(\d+))?\]");
 
         /// <summary>
         /// An instance flag used for clan chat rooms
@@ -59,6 +59,9 @@ namespace Steam
         /// </summary>
         public static readonly SteamId NonSteamGameServer = new SteamId(2, AccountType.Invalid, Universe.Invalid, 0);
 
+        /// <summary>
+        /// The underlying value that represents this SteamID
+        /// </summary>
         public readonly ulong Value;
 
         /// <summary>
@@ -131,7 +134,7 @@ namespace Steam
         /// <summary>
         /// Creates an anonymous user SteamID in the specified universe
         /// </summary>
-        /// <param name="universe"></param>
+        /// <param name="universe">The universe to set</param>
         public static SteamId CreateAnonymousUser(Universe universe)
         {
             return new SteamId(0, AccountType.AnonUser, universe, 0);
@@ -140,8 +143,7 @@ namespace Steam
         /// <summary>
         /// Creates an anonymous game server SteamID in the specified universe
         /// </summary>
-        /// <param name="universe"></param>
-        /// <returns></returns>
+        /// <param name="universe">The universe to set</param>
         public static SteamId CreateAnonymousGameServer(Universe universe)
         {
             return new SteamId(0, AccountType.AnonGameServer, universe, 0);
@@ -168,9 +170,9 @@ namespace Steam
             if (!match.Success)
                 throw new ArgumentException("The input string does not match the Steam2 pattern");
 
-            var universe = (Universe)int.Parse(match.Captures[1].Value);
-            var magic = uint.Parse(match.Captures[2].Value);
-            var account = uint.Parse(match.Captures[3].Value);
+            var universe = (Universe)int.Parse(match.Groups[1].Value);
+            var magic = uint.Parse(match.Groups[2].Value);
+            var account = uint.Parse(match.Groups[3].Value);
             return new SteamId((account * 2) + magic, AccountType.Individual, universe, 1);
         }
 
@@ -178,20 +180,25 @@ namespace Steam
         /// Creates a new ID from the specified ID string in the format [W:X:Y:Z]
         /// </summary>
         /// <param name="id">A string containing the Steam3 ID to parse</param>
+        /// <remarks>
+        /// The instance for returned IDs depends on the input.
+        /// 
+        /// For 'c' and 'L' types, the instance is the ClanFlag or LobbyFlag respectively.
+        /// For 'U' and 'i'/'I' the instance is 1.
+        /// For 'g' and 'T' the instance is 0.
+        /// 
+        /// For all other account types, the instance is Z or 0 if Z wasn't found.
+        /// </remarks>
         public static SteamId FromSteam3(string id)
         {
             var match = Steam3Regex.Match(id);
             if (!match.Success)
                 throw new ArgumentException("The input string does not match the Steam3 pattern");
 
-            var typeChar = match.Captures[1].Value[0];
-            var universe = (Universe)int.Parse(match.Captures[2].Value);
-            var account = uint.Parse(match.Captures[3].Value);
-            uint instance;
-            if (match.Captures.Count > 3)
-                instance = uint.Parse(match.Captures[4].Value);
-            else
-                instance = 0;
+            var typeChar = match.Groups[1].Value[0];
+            var universe = (Universe)int.Parse(match.Groups[2].Value);
+            var account = uint.Parse(match.Groups[3].Value);
+            uint instance = match.Groups[4].Success ? uint.Parse(match.Groups[4].Value) : 0;
             AccountType type;
             switch (typeChar)
             {
@@ -224,6 +231,7 @@ namespace Steam
                     type = AccountType.Individual;
                     instance = 1;
                     break;
+                case 'I':
                 case 'i':
                     type = AccountType.Invalid;
                     instance = 1;
@@ -343,7 +351,7 @@ namespace Steam
         }
 
         /// <summary>
-        /// Returns a matching clan chat ID for a clan ID. If it is already a cla
+        /// Returns a matching clan chat ID for a clan ID. If it is already a clan
         /// </summary>
         /// <param name="id">The clan ID to convert</param>
         /// <exception cref="ArgumentException">The ID isn't a clan ID</exception>
@@ -362,7 +370,7 @@ namespace Steam
         public static SteamId ChatToClan(SteamId id)
         {
             if (id.AccountType != AccountType.Chat || (id.AccountInstance & ClanFlag) == 0)
-                throw new ArgumentException("The provided ID must have an account type of Chat");
+                throw new ArgumentException("The provided ID must have an account type of Chat and have a clan instance flag");
 
             return new SteamId(id.AccountId, AccountType.Clan, id.AccountUniverse, 0);
         }
