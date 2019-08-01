@@ -42,6 +42,7 @@ namespace Steam.Tests
         {
             var value = new SteamId(whole);
 
+            Assert.Equal(value, new SteamId(whole));
             Assert.Equal(id, value.AccountId);
             Assert.Equal(type, value.AccountType);
             Assert.Equal(universe, value.AccountUniverse);

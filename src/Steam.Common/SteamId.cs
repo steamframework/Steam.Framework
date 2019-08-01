@@ -20,8 +20,13 @@ namespace Steam
 
         private const int ChatAccountInstanceMask = 0xFFF;
 
-        private readonly static Regex Steam2Regex = new Regex(@"STEAM_([0-4]):(0|1):(\d+)");
-        private static readonly Regex Steam3Regex = new Regex(@"^\[([iIUMGAPCgTLca]):([0-4]):(\d+)(?::(\d+))?\]");
+        private const string RegexUniverse = "universe";
+        private const string RegexLowestBit = "lowbit";
+        private const string RegexAccountId = "account";
+        private const string RegexAccountType = "idchar";
+        private const string RegexAccountInstance = "instance";
+        private static readonly Regex Steam2Regex = new Regex($@"STEAM_(?<{RegexUniverse}>[0-4]):(?<{RegexLowestBit}>0|1):(?<{RegexAccountId}>\d+)");
+        private static readonly Regex Steam3Regex = new Regex($@"^\[(?<{RegexAccountType}>[iIUMGAPCgTLca]):(?<{RegexUniverse}>[0-4]):(?<{RegexAccountId}>\d+)(?::(?<{RegexAccountInstance}>\d+))?\]");
 
         /// <summary>
         /// An instance flag used for clan chat rooms
@@ -42,16 +47,19 @@ namespace Steam
         /// game server that hasn't implemented the protocol to provide its SteamID
         /// </summary>
         public static readonly SteamId OutOfDateGameServer = default;
+
         /// <summary>
         /// The SteamID from a user game connection to a sv_lan game server
         /// </summary>
         public static readonly SteamId LanModeGameServer = default;
+
         /// <summary>
         /// The SteamID that can come from a user game connection to a game server
         /// that has just booted but hasn't yet initialized its Steam3 component
         /// and started logging on.
         /// </summary>
         public static readonly SteamId NetYetInitializedGameServer = new SteamId(1, AccountType.Invalid, Universe.Invalid, 0);
+
         /// <summary>
         /// The SteamID that can come from a user game connection to a game server
         /// that isn't using the Steam authentication system but still wants to support
@@ -170,9 +178,9 @@ namespace Steam
             if (!match.Success)
                 throw new ArgumentException("The input string does not match the Steam2 pattern");
 
-            var universe = (Universe)int.Parse(match.Groups[1].Value);
-            var magic = uint.Parse(match.Groups[2].Value);
-            var account = uint.Parse(match.Groups[3].Value);
+            var universe = (Universe)int.Parse(match.Groups[RegexUniverse].Value);
+            var magic = uint.Parse(match.Groups[RegexLowestBit].Value);
+            var account = uint.Parse(match.Groups[RegexAccountId].Value);
             return new SteamId((account * 2) + magic, AccountType.Individual, universe, 1);
         }
 
@@ -195,10 +203,10 @@ namespace Steam
             if (!match.Success)
                 throw new ArgumentException("The input string does not match the Steam3 pattern");
 
-            var typeChar = match.Groups[1].Value[0];
-            var universe = (Universe)int.Parse(match.Groups[2].Value);
-            var account = uint.Parse(match.Groups[3].Value);
-            uint instance = match.Groups[4].Success ? uint.Parse(match.Groups[4].Value) : 0;
+            var typeChar = match.Groups[RegexAccountType].Value[0];
+            var universe = (Universe)int.Parse(match.Groups[RegexUniverse].Value);
+            var account = uint.Parse(match.Groups[RegexAccountId].Value);
+            uint instance = match.Groups[RegexAccountInstance].Success ? uint.Parse(match.Groups[4].Value) : 0;
             AccountType type;
             switch (typeChar)
             {
@@ -280,46 +288,57 @@ namespace Steam
         /// Returns whether this is a login ID to be filled in
         /// </summary>
         public bool IsBlankAnonymousAccount => AccountId == 0 && IsAnonymousAccount && AccountInstance == 0;
+
         /// <summary>
         /// Returns whether this is a persistent game server ID
         /// </summary>
         public bool IsPersistentGameServer => AccountType == AccountType.GameServer;
+
         /// <summary>
         /// Returns whether this is a game server ID, either anonymous or persistent
         /// </summary>
         public bool IsGameServer => IsPersistentGameServer || IsAnonymousGameServer;
+
         /// <summary>
         /// Returns whether this is a content server ID
         /// </summary>
         public bool IsContentServer => AccountType == AccountType.ContentServer;
+
         /// <summary>
         /// Returns whether this is a clan ID
         /// </summary>
         public bool IsClan => AccountType == AccountType.Clan;
+
         /// <summary>
         /// Returns whether this is a chat ID
         /// </summary>
         public bool IsChat => AccountType == AccountType.Chat;
+
         /// <summary>
         /// Returns whether this is an individual user ID or a faked console user ID
         /// </summary>
         public bool IsIndividualAccount => AccountType == AccountType.Individual || IsConsoleUser;
+
         /// <summary>
         /// Returns whether this is a faked SteamID for a PSN friend account
         /// </summary>
         public bool IsConsoleUser => AccountType == AccountType.ConsoleUser;
+
         /// <summary>
         /// Returns whether this is an anonymous game server ID
         /// </summary>
         public bool IsAnonymousGameServer => AccountType == AccountType.AnonGameServer;
+
         /// <summary>
         /// Returns whether this is an anonymous user ID
         /// </summary>
         public bool IsAnonymousUser => AccountType == AccountType.AnonUser;
+
         /// <summary>
         /// Returns whether this is an anonymous account, either a user or game server
         /// </summary>
         public bool IsAnonymousAccount => IsAnonymousUser || IsAnonymousGameServer;
+
         /// <summary>
         /// Returns whether this is a lobby chat ID
         /// </summary>
@@ -337,6 +356,7 @@ namespace Steam
 
             return ClanToChat(id);
         }
+
         /// <summary>
         /// Returns a matching clan SteamID given a clan chat ID. If it is already a clan ID, it returns the ID
         /// </summary>
@@ -362,6 +382,7 @@ namespace Steam
 
             return new SteamId(id.AccountId, AccountType.Chat, id.AccountUniverse, ClanFlag);
         }
+
         /// <summary>
         /// Returns a matching clan ID for a clan chat ID
         /// </summary>
