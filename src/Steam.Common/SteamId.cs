@@ -67,10 +67,7 @@ namespace Steam
         /// </summary>
         public static readonly SteamId NonSteamGameServer = new SteamId(2, AccountType.Invalid, Universe.Invalid, 0);
 
-        /// <summary>
-        /// The underlying value that represents this SteamID
-        /// </summary>
-        public readonly ulong Value;
+        private readonly ulong _value;
 
         /// <summary>
         /// The universe this ID is in
@@ -79,7 +76,7 @@ namespace Steam
         {
             get
             {
-                return (Universe)(Value >> AccountUniverseShift);
+                return (Universe)(_value >> AccountUniverseShift);
             }
         }
 
@@ -90,7 +87,7 @@ namespace Steam
         {
             get
             {
-                return (AccountType)((Value >> AccountTypeShift) & AccountTypeMask);
+                return (AccountType)((_value >> AccountTypeShift) & AccountTypeMask);
             }
         }
 
@@ -101,7 +98,7 @@ namespace Steam
         {
             get
             {
-                return (uint)(Value & AccountIdMask);
+                return (uint)(_value & AccountIdMask);
             }
         }
 
@@ -112,7 +109,7 @@ namespace Steam
         {
             get
             {
-                return (uint)((Value >> AccountInstanceShift) & AccountInstanceMask);
+                return (uint)((_value >> AccountInstanceShift) & AccountInstanceMask);
             }
         }
 
@@ -121,7 +118,7 @@ namespace Steam
         /// </summary>
         public SteamId(ulong value)
         {
-            Value = value;
+            _value = value;
         }
 
         /// <summary>
@@ -133,7 +130,7 @@ namespace Steam
         /// <param name="instance">The dynamic instance part of the SteamID. This part is 20 bits.</param>
         public SteamId(uint id, AccountType type, Universe universe, uint instance)
         {
-            Value = id 
+            _value = id 
                 + ((ulong)instance << AccountInstanceShift) 
                 + ((ulong)type << AccountTypeShift) 
                 + ((ulong)universe << AccountUniverseShift);
@@ -472,7 +469,7 @@ namespace Steam
 
         public bool Equals(SteamId other)
         {
-            return Value == other.Value;
+            return _value == other._value;
         }
 
         public override bool Equals(object obj)
@@ -482,7 +479,7 @@ namespace Steam
 
         public override int GetHashCode()
         {
-            return Value.GetHashCode();
+            return _value.GetHashCode();
         }
 
         public override string ToString()
@@ -490,12 +487,12 @@ namespace Steam
             return ToSteam3(this);
         }
 
-        public static implicit operator ulong(SteamId id)
+        public static explicit operator ulong(SteamId id)
         {
-            return id.Value;
+            return id._value;
         }
 
-        public static implicit operator SteamId(ulong id)
+        public static explicit operator SteamId(ulong id)
         {
             return new SteamId(id);
         }

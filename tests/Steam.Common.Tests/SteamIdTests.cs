@@ -57,7 +57,7 @@ namespace Steam.Tests
         {
             var value = new SteamId(id, type, universe, instance);
 
-            Assert.Equal(whole, value.Value);
+            Assert.Equal(whole, (ulong)value);
         }
 
         [Theory]
@@ -66,7 +66,7 @@ namespace Steam.Tests
         [InlineData("STEAM_1:0:65978157", 76561198092222042)]
         public void TestFromSteam2(string id, ulong whole)
         {
-            Assert.Equal(whole, SteamId.FromSteam2(id).Value);
+            Assert.Equal(whole, (ulong)SteamId.FromSteam2(id));
         }
 
         [Theory]
@@ -75,7 +75,7 @@ namespace Steam.Tests
         [InlineData("STEAM_1:0:65978157", 76561198092222042)]
         public void TestToSteam2(string id, ulong whole)
         {
-            Assert.Equal(id, SteamId.ToSteam2(whole));
+            Assert.Equal(id, SteamId.ToSteam2((SteamId)whole));
         }
 
         [Theory]
@@ -83,7 +83,7 @@ namespace Steam.Tests
         [InlineData("[A:1:123432:412332]", 91842945002627624)]
         public void TestFromSteam3(string id, ulong whole)
         {
-            Assert.Equal(whole, SteamId.FromSteam3(id).Value);
+            Assert.Equal(whole, (ulong)SteamId.FromSteam3(id));
         }
 
         [Theory]
@@ -91,7 +91,7 @@ namespace Steam.Tests
         [InlineData("[A:1:123432:412332]", 91842945002627624)]
         public void TestToSteam3(string id, ulong whole)
         {
-            Assert.Equal(id, SteamId.ToSteam3(whole));
+            Assert.Equal(id, SteamId.ToSteam3((SteamId)whole));
         }
 
         [Theory]
@@ -147,7 +147,7 @@ namespace Steam.Tests
             var sta = new SteamId(id, type, universe, 0);
 
             Assert.True(dyn.StaticEquals(sta));
-            Assert.Equal(SteamId.ToStaticAccountKey(dyn), sta.Value);
+            Assert.Equal(SteamId.ToStaticAccountKey(dyn), (ulong)sta);
         }
     }
 }
