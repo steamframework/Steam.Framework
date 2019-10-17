@@ -4,85 +4,75 @@ namespace Steam.Tests
 {
     public class DepotTests
     {
+        /// <summary>
+        /// Check to make sure conversions work back and forth
+        /// </summary>
         [Theory]
+        [InlineData(0)]
         [InlineData(1)]
-        public void ConstructorSetsId(uint id)
+        [InlineData(uint.MaxValue)]
+        public void Conversions(uint value)
         {
-            Depot depot = new Depot(id);
-            Assert.Equal(id, depot.Value);
+            var depotValue = (Depot)value;
+
+            Assert.Equal(value, (uint)depotValue);
+            Assert.Equal(depotValue, (Depot)value);
         }
 
         [Theory]
-        [InlineData(1)]
-        public void GetHashCodeIsEqualToId(uint id)
+        [InlineData(1, "1")]
+        [InlineData(53, "53")]
+        public void ValueToString(uint value, string expected)
         {
-            Depot depot = new Depot(id);
-            Assert.Equal(id.GetHashCode(), depot.GetHashCode());
+            var depotValue = (Depot)value;
+            Assert.Equal(expected, depotValue.ToString());
         }
 
-        [Theory]
-        [InlineData(1)]
-        public void ToStringIsEqualToId(uint id)
-        {
-            Depot depot = new Depot(id);
-            Assert.Equal(id.ToString(), depot.ToString());
-        }
-
-        [Theory]
-        [InlineData(1)]
-        public void ImplicitConversionFromUint(uint id)
-        {
-            Depot depot = id;
-            Assert.Equal(id, depot.Value);
-        }
-
-        [Theory]
-        [InlineData(1)]
-        public void ImplicitConversionFromDepot(uint id)
-        {
-            Depot depot = new Depot(id);
-            uint uintDepot = depot;
-            Assert.Equal(depot.Value, uintDepot);
-        }
-
-        [Theory]
-        [InlineData(1, 1, false)]
-        [InlineData(1, null, false)]
-        [InlineData(1, true, false)]
-        public void EqualToObject(uint id, object other, bool expectedResult)
-        {
-            Depot depot = new Depot(id);
-            Assert.Equal(depot.Equals(other), expectedResult);
-        }
-
+        /// <summary>
+        /// Check comparison methods to make sure they work properly
+        /// </summary>
         [Theory]
         [InlineData(1, 1, true)]
-        [InlineData(1, 0, false)]
-        public void EqualToDepotObject(uint id, uint other, bool expectedResult)
+        [InlineData(0, 1, false)]
+        public void Comparisons(uint a, uint b, bool areEqual)
         {
-            Depot depot = new Depot(id);
-            Depot depot2 = new Depot(other);
-            Assert.Equal(depot.Equals((object) depot2), expectedResult);
+            var aDepot = (Depot)a;
+            var bDepot = (Depot)b;
+
+            Assert.Equal(areEqual, aDepot.Equals(bDepot));
+            Assert.Equal(areEqual, bDepot.Equals(aDepot));
+
+            Assert.Equal(areEqual, aDepot == bDepot);
+            Assert.Equal(areEqual, bDepot == aDepot);
+
+            Assert.Equal(areEqual, !(aDepot != bDepot));
+            Assert.Equal(areEqual, !(bDepot != aDepot));
         }
 
+        /// <summary>
+        /// Check that comparing Depot objects with different objects compare properly.
+        /// 
+        /// Depots should compare properly with other Depots
+        /// Depots should fail to compare with uints
+        /// Depots should fail to compare to other types not Depots
+        /// </summary>
         [Theory]
         [InlineData(1, 1, true)]
-        [InlineData(1, 0, false)]
-        public void EqualityOperator(uint id, uint other, bool expectedResult)
+        [InlineData(0, 1, false)]
+        public void ObjectComparisons(uint a, uint b, bool areEqual)
         {
-            Depot depot = new Depot(id);
-            Depot depot2 = new Depot(other);
-            Assert.Equal(depot == depot2, expectedResult);
-        }
+            object boxADepot = (Depot)a;
+            object boxBDepot = (Depot)b;
+            Assert.Equal(areEqual, boxADepot.Equals(boxBDepot));
 
-        [Theory]
-        [InlineData(1, 1, false)]
-        [InlineData(1, 0, true)]
-        public void InequalityOperator(uint id, uint other, bool expectedResult)
-        {
-            Depot depot = new Depot(id);
-            Depot depot2 = new Depot(other);
-            Assert.Equal(depot != depot2, expectedResult);
+            object boxA = a;
+            object boxB = b;
+
+            Assert.NotEqual(boxA, boxADepot);
+            Assert.NotEqual(boxB, boxBDepot);
+
+            Assert.False(boxADepot.Equals(null));
+            Assert.False(boxBDepot.Equals(null));
         }
     }
 }

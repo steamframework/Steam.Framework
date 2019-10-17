@@ -4,85 +4,76 @@ namespace Steam.Tests
 {
     public class PackageTests
     {
+        /// <summary>
+        /// Check to make sure conversions work back and forth
+        /// </summary>
         [Theory]
+        [InlineData(0)]
         [InlineData(1)]
-        public void ConstructorSetsId(uint id)
+        [InlineData(uint.MaxValue)]
+        public void Conversions(uint value)
         {
-            Package package = new Package(id);
-            Assert.Equal(id, package.Value);
+            var packageValue = (Package)value;
+
+            Assert.Equal(value, (uint)packageValue);
+            Assert.Equal(packageValue, (Package)value);
+            Assert.Equal(packageValue, new Package(value));
         }
 
         [Theory]
-        [InlineData(1)]
-        public void GetHashCodeIsEqualToId(uint id)
+        [InlineData(1, "1")]
+        [InlineData(53, "53")]
+        public void ValueToString(uint value, string expected)
         {
-            Package package = new Package(id);
-            Assert.Equal(id.GetHashCode(), package.GetHashCode());
+            var packageValue = (Package)value;
+            Assert.Equal(expected, packageValue.ToString());
         }
 
-        [Theory]
-        [InlineData(1)]
-        public void ToStringIsEqualToId(uint id)
-        {
-            Package package = new Package(id);
-            Assert.Equal(id.ToString(), package.ToString());
-        }
-
-        [Theory]
-        [InlineData(1)]
-        public void ImplicitConversionFromUint(uint id)
-        {
-            Package package = id;
-            Assert.Equal(id, package.Value);
-        }
-
-        [Theory]
-        [InlineData(1)]
-        public void ImplicitConversionFromPackage(uint id)
-        {
-            Package package = new Package(id);
-            uint uintPackage = package;
-            Assert.Equal(package.Value, uintPackage);
-        }
-
-        [Theory]
-        [InlineData(1, 1, false)]
-        [InlineData(1, null, false)]
-        [InlineData(1, true, false)]
-        public void EqualToObject(uint id, object other, bool expectedResult)
-        {
-            Package package = new Package(id);
-            Assert.Equal(package.Equals(other), expectedResult);
-        }
-
+        /// <summary>
+        /// Check comparison methods to make sure they work properly
+        /// </summary>
         [Theory]
         [InlineData(1, 1, true)]
-        [InlineData(1, 0, false)]
-        public void EqualToPackageObject(uint id, uint other, bool expectedResult)
+        [InlineData(0, 1, false)]
+        public void Comparisons(uint a, uint b, bool areEqual)
         {
-            Package package = new Package(id);
-            Package package2 = new Package(other);
-            Assert.Equal(package.Equals((object) package2), expectedResult);
+            var aPackage = (Package)a;
+            var bPackage = (Package)b;
+
+            Assert.Equal(areEqual, aPackage.Equals(bPackage));
+            Assert.Equal(areEqual, bPackage.Equals(aPackage));
+
+            Assert.Equal(areEqual, aPackage == bPackage);
+            Assert.Equal(areEqual, bPackage == aPackage);
+
+            Assert.Equal(areEqual, !(aPackage != bPackage));
+            Assert.Equal(areEqual, !(bPackage != aPackage));
         }
 
+        /// <summary>
+        /// Check that comparing Package objects with different objects compare properly.
+        /// 
+        /// Packages should compare properly with other Packages
+        /// Packages should fail to compare with uints
+        /// Packages should fail to compare to other types not Packages
+        /// </summary>
         [Theory]
         [InlineData(1, 1, true)]
-        [InlineData(1, 0, false)]
-        public void EqualityOperator(uint id, uint other, bool expectedResult)
+        [InlineData(0, 1, false)]
+        public void ObjectComparisons(uint a, uint b, bool areEqual)
         {
-            Package package = new Package(id);
-            Package package2 = new Package(other);
-            Assert.Equal(package == package2, expectedResult);
-        }
+            object boxAPackage = (Package)a;
+            object boxBPackage = (Package)b;
+            Assert.Equal(areEqual, boxAPackage.Equals(boxBPackage));
 
-        [Theory]
-        [InlineData(1, 1, false)]
-        [InlineData(1, 0, true)]
-        public void InequalityOperator(uint id, uint other, bool expectedResult)
-        {
-            Package package = new Package(id);
-            Package package2 = new Package(other);
-            Assert.Equal(package != package2, expectedResult);
+            object boxA = a;
+            object boxB = b;
+
+            Assert.NotEqual(boxA, boxAPackage);
+            Assert.NotEqual(boxB, boxBPackage);
+
+            Assert.False(boxAPackage.Equals(null));
+            Assert.False(boxBPackage.Equals(null));
         }
     }
 }

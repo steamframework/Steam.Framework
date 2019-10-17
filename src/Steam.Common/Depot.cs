@@ -3,47 +3,44 @@ using System;
 namespace Steam
 {
     /// <summary>
-    /// A depot is a logical grouping of files which are all delivered to a customer as a single group, see https://partner.steamgames.com/doc/store/application/depots
+    /// An ID value for a logical grouping of files which are all delivered to a customer as a single group, see https://partner.steamgames.com/doc/store/application/depots
     /// </summary>
-    public struct Depot : IEquatable<Depot>
+    public readonly struct Depot : IEquatable<Depot>
     {
-        /// <summary>
-        /// The Id
-        /// </summary>
-        public readonly uint Value;
+        private readonly uint _value;
 
         /// <summary>
-        /// Invalid depot value
+        /// An invalid depot value
         /// </summary>
-        public static readonly uint Invalid = 0x0;
+        public readonly static Depot Invalid = new Depot(0x0);
 
         /// <summary>
         /// Creates a new instance of <see cref="Depot"/>
         /// </summary>
-        /// <param name="value">The ID</param>
+        /// <param name="value">The ID value</param>
         public Depot(uint value)
         {
-            Value = value;
+            _value = value;
         }
 
         /// <summary>
-        /// Implicit <see cref="uint"/> to <see cref="Depot"/> conversion
+        /// Explicit <see cref="uint"/> to <see cref="Depot"/> conversion
         /// </summary>
         /// <param name="value">The depot ID to convert</param>
         /// <returns>The new <see cref="Depot"/></returns>
-        public static implicit operator Depot(uint value)
+        public static explicit operator Depot(uint value)
         {
             return new Depot(value);
         }
 
         /// <summary>
-        /// Implicit <see cref="Depot"/> to <see cref="uint"/> conversion
+        /// Explicit <see cref="Depot"/> to <see cref="uint"/> conversion
         /// </summary>
         /// <param name="depot">The depot to convert</param>
         /// <returns>The converted depot Id</returns>
-        public static implicit operator uint(Depot depot)
+        public static explicit operator uint(Depot depot)
         {
-            return depot.Value;
+            return depot._value;
         }
 
         /// <summary>
@@ -52,7 +49,7 @@ namespace Steam
         /// <returns>The hashcode</returns>
         public override int GetHashCode()
         {
-            return (int) Value;
+            return (int) _value;
         }
 
         /// <summary>
@@ -61,7 +58,7 @@ namespace Steam
         /// <returns>The string</returns>
         public override string ToString()
         {
-            return Value.ToString();
+            return _value.ToString();
         }
 
         /// <summary>
@@ -81,7 +78,7 @@ namespace Steam
         /// <returns>Whether the 2 instances are equal</returns>
         public bool Equals(Depot other)
         {
-            return Value == other.Value;
+            return _value == other._value;
         }
 
         /// <summary>

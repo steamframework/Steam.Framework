@@ -4,94 +4,87 @@ using Xunit;
 namespace Steam.Tests
 {
     public class AppTests
-    {
+    {   
+        /// <summary>
+        /// Check to make sure conversions work back and forth
+        /// </summary>
         [Theory]
+        [InlineData(0)]
         [InlineData(1)]
-        public void ConstructorSetsId(uint id)
+        [InlineData(0xFFFFFF)]
+        public void Conversions(uint value)
         {
-            App app = new App(id);
-            Assert.Equal(id, app.Value);
+            var appValue = (App)value;
+
+            Assert.Equal(value, (uint)appValue);
+            Assert.Equal(appValue, (App)value);
+        }
+
+        /// <summary>
+        /// Check to make sure converting a value out of range throws an exception
+        /// </summary>
+        [Theory]
+        [InlineData(0xFFFFFF + 1)]
+        [InlineData(uint.MaxValue)]
+        public void OutOfRangeCheck(uint outOfRangeValue)
+        {
+            Assert.Throws<ArgumentOutOfRangeException>(() => (App)outOfRangeValue);
         }
 
         [Theory]
-        [InlineData(16777216)]
-        [InlineData(int.MaxValue)]
-        public void ConstructorOutOfRangeException(uint id)
+        [InlineData(1, "1")]
+        [InlineData(53, "53")]
+        public void ValueToString(uint value, string expected)
         {
-            Assert.Throws<ArgumentOutOfRangeException>(() => { new App(id); });
+            var appValue = (App)value;
+            Assert.Equal(expected, appValue.ToString());
         }
 
-        [Theory]
-        [InlineData(1)]
-        public void GetHashCodeIsEqualToId(uint id)
-        {
-            App app = new App(id);
-            Assert.Equal(id.GetHashCode(), app.GetHashCode());
-        }
-
-        [Theory]
-        [InlineData(1)]
-        public void ToStringIsEqualToId(uint id)
-        {
-            App app = new App(id);
-            Assert.Equal(id.ToString(), app.ToString());
-        }
-
-        [Theory]
-        [InlineData(1)]
-        public void ExplicitConversionFromUint(uint id)
-        {
-            App app = (App)id;
-            Assert.Equal(id, app.Value);
-        }
-
-        [Theory]
-        [InlineData(1)]
-        public void ExplicitConversionFromApp(uint id)
-        {
-            App app = new App(id);
-            uint uintApp = (uint)app;
-            Assert.Equal(app.Value, uintApp);
-        }
-
-        [Theory]
-        [InlineData(1, 1, false)]
-        [InlineData(1, null, false)]
-        [InlineData(1, true, false)]
-        public void EqualToObject(uint id, object other, bool expectedResult)
-        {
-            App app = new App(id);
-            Assert.Equal(app.Equals(other), expectedResult);
-        }
-
+        /// <summary>
+        /// Check comparison methods to make sure they work properly
+        /// </summary>
         [Theory]
         [InlineData(1, 1, true)]
-        [InlineData(1, 0, false)]
-        public void EqualToAppObject(uint id, uint other, bool expectedResult)
+        [InlineData(0, 1, false)]
+        public void Comparisons(uint a, uint b, bool areEqual)
         {
-            App app = new App(id);
-            App app2 = new App(other);
-            Assert.Equal(app.Equals((object) app2), expectedResult);
+            var aApp = (App)a;
+            var bApp = (App)b;
+
+            Assert.Equal(areEqual, aApp.Equals(bApp));
+            Assert.Equal(areEqual, bApp.Equals(aApp));
+
+            Assert.Equal(areEqual, aApp == bApp);
+            Assert.Equal(areEqual, bApp == aApp);
+
+            Assert.Equal(areEqual, !(aApp != bApp));
+            Assert.Equal(areEqual, !(bApp != aApp));
         }
 
+        /// <summary>
+        /// Check that comparing App objects with different objects compare properly.
+        /// 
+        /// Apps should compare properly with other Apps
+        /// Apps should fail to compare with uints
+        /// Apps should fail to compare to other types not Apps
+        /// </summary>
         [Theory]
         [InlineData(1, 1, true)]
-        [InlineData(1, 0, false)]
-        public void EqualityOperator(uint id, uint other, bool expectedResult)
+        [InlineData(0, 1, false)]
+        public void ObjectComparisons(uint a, uint b, bool areEqual)
         {
-            App app = new App(id);
-            App app2 = new App(other);
-            Assert.Equal(app == app2, expectedResult);
-        }
+            object boxAApp = (App)a;
+            object boxBApp = (App)b;
+            Assert.Equal(areEqual, boxAApp.Equals(boxBApp));
 
-        [Theory]
-        [InlineData(1, 1, false)]
-        [InlineData(1, 0, true)]
-        public void InequalityOperator(uint id, uint other, bool expectedResult)
-        {
-            App app = new App(id);
-            App app2 = new App(other);
-            Assert.Equal(app != app2, expectedResult);
+            object boxA = a;
+            object boxB = b;
+
+            Assert.NotEqual(boxA, boxAApp);
+            Assert.NotEqual(boxB, boxBApp);
+
+            Assert.False(boxAApp.Equals(null));
+            Assert.False(boxBApp.Equals(null));
         }
     }
 }

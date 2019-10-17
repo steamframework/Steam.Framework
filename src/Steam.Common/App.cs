@@ -3,38 +3,37 @@ using System;
 namespace Steam
 {
     /// <summary>
-    /// Main representation of a product, see https://partner.steamgames.com/doc/store/application
+    /// An ID for the main representation of a product, see https://partner.steamgames.com/doc/store/application
     /// </summary>
     public readonly struct App : IEquatable<App>
     {
-        /// <summary>
-        /// The value of the app ID
-        /// </summary>
-        public readonly uint Value;
+        private readonly uint _value;
+
+        private const uint Max = 16777215;
 
         /// <summary>
-        /// Invalid app value
+        /// A value used to represent an invalid app value
         /// </summary>
         public static readonly App Invalid = (App)0x0;
 
         /// <summary>
         /// The max value of an app ID
         /// </summary>
-        public const uint MaxValue = 16777215;
+        public static readonly App MaxValue = (App)Max;
 
         /// <summary>
         /// Creates a new instance of <see cref="App"/>
         /// </summary>
-        /// <param name="value">The ID with a max value of <seealso cref="MaxValue"/>(16777215)</param>
+        /// <param name="value">The ID value. Cannot be more than <seealso cref="MaxValue"/></param>
         public App(uint value)
         {
-            if (value > MaxValue)
+            if (value > Max)
             {
                 throw new ArgumentOutOfRangeException(nameof(value),
-                    $"App ids have a max value of {MaxValue}");
+                    $"App ID cannot be more than {Max}");
             }
-            
-            Value = value;
+
+            _value = value;
         }
 
         /// <summary>
@@ -54,9 +53,8 @@ namespace Steam
         /// <returns>The converted app Id</returns>
         public static explicit operator uint(App app)
         {
-            return app.Value;
+            return app._value;
         }
-
 
         /// <summary>
         /// Calculates a hashcode for this instance
@@ -64,7 +62,7 @@ namespace Steam
         /// <returns>The hashcode</returns>
         public override int GetHashCode()
         {
-            return Value.GetHashCode();
+            return _value.GetHashCode();
         }
 
         /// <summary>
@@ -73,7 +71,7 @@ namespace Steam
         /// <returns>The string</returns>
         public override string ToString()
         {
-            return Value.ToString();
+            return _value.ToString();
         }
 
         /// <summary>
@@ -93,7 +91,7 @@ namespace Steam
         /// <returns>Whether the 2 instances are equal</returns>
         public bool Equals(App other)
         {
-            return Value == other.Value;
+            return _value == other._value;
         }
 
         /// <summary>

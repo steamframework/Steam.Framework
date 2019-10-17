@@ -3,52 +3,49 @@ using System;
 namespace Steam
 {
     /// <summary>
-    /// A package is a collection of one or more applications and depots that can be sold via Steam or can be granted to users based on the activation of a Steam key, see https://partner.steamgames.com/doc/store/application/packages
+    /// An ID for a collection of one or more applications and depots that can be sold via Steam or can be granted to users based on the activation of a Steam key, see https://partner.steamgames.com/doc/store/application/packages
     /// </summary>
-    public struct Package : IEquatable<Package>
+    public readonly struct Package : IEquatable<Package>
     {
-        /// <summary>
-        /// The Id
-        /// </summary>
-        public readonly uint Value;
+        private readonly uint _value;
 
         /// <summary>
-        /// Invalid package value
+        /// An invalid package value
         /// </summary>
-        public static readonly uint Invalid = 0xFFFFFFFF;
+        public static readonly Package Invalid = (Package)0xFFFFFFFF;
 
         /// <summary>
-        /// FreeSub value
+        /// The value for a free package subscription given to all Steam accounts
         /// </summary>
-        public static readonly uint FreeSub = 0x0;
+        public static readonly Package FreeSub = (Package)0x0;
 
         /// <summary>
         /// Creates a new instance of <see cref="Package"/>
         /// </summary>
-        /// <param name="value">The ID</param>
+        /// <param name="value">The ID value</param>
         public Package(uint value)
         {
-            Value = value;
+            _value = value;
         }
 
         /// <summary>
-        /// Implicit <see cref="uint"/> to <see cref="Package"/> conversion
+        /// Explicit <see cref="uint"/> to <see cref="Package"/> conversion
         /// </summary>
         /// <param name="value">The package ID to convert</param>
         /// <returns>The new <see cref="Package"/></returns>
-        public static implicit operator Package(uint value)
+        public static explicit operator Package(uint value)
         {
             return new Package(value);
         }
 
         /// <summary>
-        /// Implicit <see cref="uint"/> to <see cref="Package"/> conversion
+        /// Explicit <see cref="uint"/> to <see cref="Package"/> conversion
         /// </summary>
         /// <param name="package">The package to convert</param>
         /// <returns>The new <see cref="Package"/></returns>
-        public static implicit operator uint(Package package)
+        public static explicit operator uint(Package package)
         {
-            return package.Value;
+            return package._value;
         }
 
         /// <summary>
@@ -57,7 +54,7 @@ namespace Steam
         /// <returns>The hashcode</returns>
         public override int GetHashCode()
         {
-            return (int) Value;
+            return (int) _value;
         }
 
         /// <summary>
@@ -66,7 +63,7 @@ namespace Steam
         /// <returns>The string</returns>
         public override string ToString()
         {
-            return Value.ToString();
+            return _value.ToString();
         }
 
         /// <summary>
@@ -86,7 +83,7 @@ namespace Steam
         /// <returns>Whether the 2 instances are equal</returns>
         public bool Equals(Package other)
         {
-            return Value == other.Value;
+            return _value == other._value;
         }
 
         /// <summary>
