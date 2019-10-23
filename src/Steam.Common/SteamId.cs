@@ -124,10 +124,10 @@ namespace Steam
         /// <summary>
         /// Creates a new SteamID with the specified parts
         /// </summary>
-        /// <param name="id">The account ID of the SteamID. This part is 32 bits.</param>
-        /// <param name="type">The account type of the SteamID. This part is 4 bits.</param>
-        /// <param name="universe">The universe of the SteamID. This part is 8 bits.</param>
-        /// <param name="instance">The dynamic instance part of the SteamID. This part is 20 bits.</param>
+        /// <param name="id">The account ID of the SteamID.</param>
+        /// <param name="type">The account type of the SteamID.</param>
+        /// <param name="universe">The universe of the SteamID.</param>
+        /// <param name="instance">The dynamic instance part of the SteamID.</param>
         public SteamId(uint id, AccountType type, Universe universe, uint instance)
         {
             _value = id 
@@ -169,22 +169,50 @@ namespace Steam
         /// Creates a new ID from the specified ID string in the format STEAM_X:Y:Z
         /// </summary>
         /// <param name="id">A string containing the Steam2 ID to parse</param>
+        /// <param name="value">The output value with the Steam ID</param>
+        /// <returns><c>true</c> if the string contains an ID string, <c>false</c> otherwise</returns>
+        public static bool TryFromSteam2(string id, out SteamId value)
+        {
+            value = Zero;
+
+            var match = Steam2Regex.Match(id);
+            if (!match.Success)
+                return false;
+
+            return FromSteam2Match(match, out value);
+        }
+
+        /// <summary>
+        /// Creates a new ID from the specified ID string in the format STEAM_X:Y:Z
+        /// </summary>
+        /// <param name="id">A string containing the Steam2 ID to parse</param>
+        /// <exception cref="ArgumentException">Thrown if the string is not a valid Steam2 string</exception>
         public static SteamId FromSteam2(string id)
         {
             var match = Steam2Regex.Match(id);
             if (!match.Success)
                 throw new ArgumentException("The input string does not match the Steam2 pattern");
 
+            return FromSteam2Match(match, out var value) ? value : throw new ArgumentException("The input string does not match the Steam2 pattern");
+        }
+
+        private static bool FromSteam2Match(Match match, out SteamId value)
+        {
+            value = Zero;
+
             var universe = (Universe)int.Parse(match.Groups[RegexUniverse].Value);
             var magic = uint.Parse(match.Groups[RegexLowestBit].Value);
-            var account = uint.Parse(match.Groups[RegexAccountId].Value);
-            return new SteamId((account * 2) + magic, AccountType.Individual, universe, 1);
+            if (!uint.TryParse(match.Groups[RegexAccountId].Value, out var account)) return false;
+
+            value = new SteamId((account * 2) + magic, AccountType.Individual, universe, 1);
+            return true;
         }
 
         /// <summary>
         /// Creates a new ID from the specified ID string in the format [W:X:Y:Z]
         /// </summary>
         /// <param name="id">A string containing the Steam3 ID to parse</param>
+        /// <param name="value">The output value with the Steam ID</param>
         /// <remarks>
         /// The instance for returned IDs depends on the input.
         /// 
@@ -194,16 +222,57 @@ namespace Steam
         /// 
         /// For all other account types, the instance is Z or 0 if Z wasn't found.
         /// </remarks>
+        /// <returns><c>true</c> if the string contains an ID string, <c>false</c> otherwise</returns>
+        public static bool TryFromSteam3(string id, out SteamId value)
+        {
+            value = Zero;
+
+            var match = Steam3Regex.Match(id);
+            if (!match.Success)
+                return false;
+
+            return FromSteam3Match(match, out value);
+        }
+
+        /// <summary>
+        /// Creates a new ID from the specified ID string in the format [W:X:Y:Z]
+        /// </summary>
+        /// <param name="id">A string containing the Steam3 ID to parse</param>
+        /// <remarks>
+        /// The instance for returned IDs depends on the input.
+        /// 
+        /// For 'c' and 'L' types, the instance is the <see cref="ClanFlag"/> or <see cref="LobbyFlag"/> respectively.
+        /// For 'U' and 'i'/'I' the instance is 1.
+        /// For 'g' and 'T' the instance is 0.
+        /// 
+        /// For all other account types, the instance is Z or 0 if Z wasn't found.
+        /// </remarks>
+        /// <returns>The Steam ID value from the input string</returns>
+        /// <exception cref="ArgumentException">Thrown if the string is not a valid Steam3 string</exception>
         public static SteamId FromSteam3(string id)
         {
             var match = Steam3Regex.Match(id);
             if (!match.Success)
                 throw new ArgumentException("The input string does not match the Steam3 pattern");
 
-            var typeChar = match.Groups[RegexAccountType].Value[0];
+            return FromSteam3Match(match, out var value) ? value : throw new ArgumentException("The input string does not match the Steam3 pattern");
+        }
+
+        private static bool FromSteam3Match(Match match, out SteamId value)
+        {
+            value = Zero;
+
             var universe = (Universe)int.Parse(match.Groups[RegexUniverse].Value);
-            var account = uint.Parse(match.Groups[RegexAccountId].Value);
-            uint instance = match.Groups[RegexAccountInstance].Success ? uint.Parse(match.Groups[4].Value) : 0;
+            if (!uint.TryParse(match.Groups[RegexAccountId].Value, out var account)) return false;
+
+            uint instance = 0;
+            var instanceGroup = match.Groups[RegexAccountInstance];
+            if (instanceGroup.Success)
+            {
+                if (!uint.TryParse(instanceGroup.Value, out instance)) return false;
+            }
+            
+            var typeChar = match.Groups[RegexAccountType].Value[0];
             AccountType type;
             switch (typeChar)
             {
@@ -245,7 +314,8 @@ namespace Steam
                     throw new InvalidOperationException("unreachable");
             }
 
-            return new SteamId(account, type, universe, instance);
+            value = new SteamId(account, type, universe, instance);
+            return true;
         }
 
         /// <summary>
@@ -368,7 +438,7 @@ namespace Steam
         }
 
         /// <summary>
-        /// Returns a matching clan chat ID for a clan ID. If it is already a clan
+        /// Returns a matching clan chat ID for a clan ID.
         /// </summary>
         /// <param name="id">The clan ID to convert</param>
         /// <exception cref="ArgumentException">The ID isn't a clan ID</exception>
@@ -381,7 +451,7 @@ namespace Steam
         }
 
         /// <summary>
-        /// Returns a matching clan ID for a clan chat ID
+        /// Returns a matching clan ID for a clan chat ID.
         /// </summary>
         /// <param name="id">The chat ID to convert</param>
         /// <exception cref="ArgumentException">The ID isn't a chat ID with a clan flag</exception>
@@ -408,6 +478,7 @@ namespace Steam
         /// Renders the individual user SteamID in Steam2 format (STEAM_X:Y:Z)
         /// </summary>
         /// <param name="id">The ID to render</param>
+        /// <exception cref="ArgumentException">Throws if the account type of the ID isn't an individual</exception>
         public static string ToSteam2(SteamId id)
         {
             if (id.AccountType != AccountType.Individual)
@@ -458,50 +529,86 @@ namespace Steam
         }
 
         /// <summary>
-        /// Returns if this <see cref="SteamId"/> is equal to the other <see cref="SteamId"/> by comparing the static properties of each ID
+        /// Returns whether this <see cref="SteamId"/> is equal to the other <see cref="SteamId"/> by comparing the static properties of each ID
         /// </summary>
         /// <param name="other">The other ID to compare with</param>
-        /// <returns>True if their account IDs, types, and universes are equal. Otherwise false</returns>
+        /// <returns><c>true</c> if their account IDs, types, and universes are equal. Otherwise <c>false</c></returns>
         public bool StaticEquals(SteamId other)
         {
             return AccountId == other.AccountId && AccountType == other.AccountType && AccountUniverse == other.AccountUniverse;
         }
 
+        /// <summary>
+        /// Returns whether this <see cref="SteamId"/> is equal to the other <see cref="SteamId"/> by comparing all the properties of each ID
+        /// </summary>
+        /// <param name="other">The other ID to compare with</param>
+        /// <returns><c>true</c> if the IDs are equal, otherwise <c>false</c></returns>
         public bool Equals(SteamId other)
         {
             return _value == other._value;
         }
 
+        /// <summary>
+        /// Returns whether this <see cref="SteamId"/> is equal to the specified <see cref="object"/>
+        /// </summary>
+        /// <param name="obj">The object to compare with</param>
+        /// <returns><c>true</c> if the objects are equal, otherwise <c>false</c></returns>
         public override bool Equals(object obj)
         {
             return obj is SteamId id ? Equals(id) : false;
         }
 
+        /// <summary>
+        /// Gets a hash for this <see cref="SteamId"/> value
+        /// </summary>
+        /// <returns>A hash of the value</returns>
         public override int GetHashCode()
         {
             return _value.GetHashCode();
         }
 
+        /// <summary>
+        /// Returns the <see cref="SteamId"/> in Steam3 string format
+        /// </summary>
+        /// <returns>A Steam3 string value</returns>
         public override string ToString()
         {
             return ToSteam3(this);
         }
 
+        /// <summary>
+        /// Explicitly converts a Steam ID to a ulong value
+        /// </summary>
+        /// <param name="id">The ID to convert</param>
         public static explicit operator ulong(SteamId id)
         {
             return id._value;
         }
 
+        /// <summary>
+        /// Explicitly converts a ulong value into a Steam ID
+        /// </summary>
+        /// <param name="id">The value to convert</param>
         public static explicit operator SteamId(ulong id)
         {
             return new SteamId(id);
         }
 
+        /// <summary>
+        /// Returns whether this <see cref="SteamId"/> is equal to the other <see cref="SteamId"/> by comparing all the properties of each ID
+        /// </summary>
+        /// <param name="other">The other ID to compare with</param>
+        /// <returns><c>true</c> if the IDs are equal, otherwise <c>false</c></returns>
         public static bool operator ==(SteamId a, SteamId b)
         {
             return a.Equals(b);
         }
 
+        /// <summary>
+        /// Returns whether this <see cref="SteamId"/> isn't equal to the other <see cref="SteamId"/> by comparing all the properties of each ID
+        /// </summary>
+        /// <param name="other">The other ID to compare with</param>
+        /// <returns><c>true</c> if the IDs aren't equal, otherwise <c>false</c></returns>
         public static bool operator !=(SteamId a, SteamId b)
         {
             return !a.Equals(b);
